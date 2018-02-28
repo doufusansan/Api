@@ -1,0 +1,219 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MainMaster.master.cs" Inherits="ZLCMS.Web.MainMaster" %>
+
+<%@ Import Namespace ="ZLCMS.Business.Util" %>
+<%@ Register src="/UC/UC_PcProductTreeNav.ascx" tagname="UcPcProductTreeNav" tagprefix="uc1" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <meta name="description" content="<%= ParamKit.GetValue("SystemConfig", "Desciption", "&nbsp") %>" />
+    <meta name="keywords" content="<%= ParamKit.GetValue("SystemConfig", "KeyWords", "&nbsp") %>" />
+    <meta name="renderer" content="webkit">
+    <title><%= ParamKit.GetValue("SystemConfig", "SiteName", "&nbsp") %></title>
+    <link rel="shortcut icon" href="/favicon.ico" />
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="/MemberUser/css/cui.css" rel="stylesheet" type="text/css" />
+    <link href="/MemberUser/css/member.css" rel="stylesheet" type="text/css" />
+    <link href="/MemberUser/css/all.css" rel="stylesheet" type="text/css" />
+    <link href="/MemberUser/css/childs.css" rel="stylesheet" type="text/css" />
+    <%--<script src="/js/jquery-1.9.1.min.js" type="text/javascript"></script>--%>
+    <script   src="/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+  <%--  <script type="text/javascript" src="/js/jquery-1.4.4.min.js"></script>--%>
+    <script type="text/javascript" src="/js/validform/Validform_v5.3.2_min.js"></script>
+    <link rel="stylesheet" href="/css/validform/style.css" /> 
+    <script src="/js/Common.js" type="text/javascript"></script>
+    <script src="/js/jquery.json-2.2.min.js" type="text/javascript"></script>
+
+    <script src="/MemberUser/js/bx.js" type="text/javascript"></script>
+    <script src="/MemberUser/js/hover.js" type="text/javascript"></script>
+       <script src="/js/jquery.lazyload.min.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("img.lazy").lazyload({
+                threshold: 200,
+                skip_invisible: false,
+                effect: "fadeIn",
+                failure_limit: 10
+            });
+        });
+        function SearchProduct() {
+            var keyword = $("#keyword").val();
+            if ($.trim(keyword) != '') {
+                location.href = "/Product/ProductList.aspx?keyword=" + keyword;
+            }
+            else {
+                alert("请输入关键字!");
+            }
+        }
+        //错误处理方法
+        function reportError(sMessage, sUrl, sLine) {
+            var str = "";
+            str += " 错误信息:" + sMessage + "\n";
+            str += " 错误地址:" + sUrl + "\n";
+            str += " 错误行数:" + sLine + "\n";
+            str += "<=========调用堆栈=========>\n";
+            var func = window.onerror.caller;
+            var index = 0;
+            while (func != null) {
+                str += func;
+                str += "\n===================\n";
+                func = func.caller;
+                index++;
+            }
+            alert(str);
+            return true;
+        }
+        //window.onerror = reportError;</script>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+<!--top start-->
+<div id="top">
+	<div class="top_box">
+    	<ul class="left">
+        	<li class="hello">您好，欢迎来到你和我官网！</li>
+            <li><%= Session[GlobalSessionString.CurrentMemberAccount] == null ? "<a href='/MemberUser/Login.aspx' class='login'> [登录]</a> | <a href='/MemberUser/RegEmail.aspx' class='regist'>[注册]</a>" : "<a href='/MemberUser/Logout.aspx' class='regist'>[退出]</a>"%></li>
+            <div class="clear"></div>
+        </ul>
+        <ul class="right">
+        	<li class="topsub"><a href="/MemberUser/Default.aspx" class="tik">用户中心<i><img src="/MemberUser/images/top_icon.png" width="9" height="8" /></i></a>
+            	<ul class="topsubpage">
+                	<li><a href="/MemberUser/ChgPasswd.aspx">修改密码</a></li>
+                    <li><a href="/MemberUser/ModifyUserInfo.aspx">修改基本资料</a></li>
+                    <li><a href="/MemberUser/MyAddress.aspx">我的收货地址</a></li>
+                    <li><a href="/MemberUser/Logout.aspx">退出</a></li>
+                </ul>
+            </li>
+            <li class="topsub1"><a href="/MemberUser/MyOrder.aspx" class="tik1">我的订单<i><img src="/MemberUser/images/top_icon.png" width="9" height="8" /></i></a>
+            	<ul class="topsubpage1">
+                	<li><a href="/MemberUser/MyOrder.aspx?type=unpaid">待支付订单</a></li>
+                    <li><a href="/MemberUser/MyOrder.aspx">全部订单</a></li>
+                </ul>
+            </li>
+            <li><a href="/shopcart/shoppingcart.aspx"><img src="/MemberUser/images/top_cart.png" width="17" height="16" />购物车</a></li>
+            <div class="clear"></div>
+        </ul>
+        <div class="clear"></div>
+    </div>
+</div>
+<!--top end-->
+
+<!--header start-->
+<div id="header">
+<div class="header_box">
+		<div id="logo"><a href="/"><img src="/MemberUser/images/logo.png"/></a></div>
+        <div class="left">
+    	<div id="search">
+        	<form action="" method="get" id="form_search">
+            	<input name="keyword" type="text" value="<%= Request["keyword"] %>" class="text" id="keyword" placeholder="请输入关键词" />
+                <input name="" type="button" value="搜索" class="button" onclick="SearchProduct()" />
+            </form>
+        </div>
+      <p class="search_text">热门搜索：<asp:Repeater ID="rpt_activity" runat="server">
+                <ItemTemplate>
+              <a href="<%#Eval("Url") %>"> <%#Eval("Title") %></a>    
+                    </li>
+                </ItemTemplate>
+            </asp:Repeater></p>
+      </div>
+    <div class="play_pic"><a href="<%=AdsKits.LoadSingleAds("HEAD_RIGHT_PIC").Url %>"><img src="<%=AdsKits.AdsPic("HEAD_RIGHT_PIC") %>" width="265" height="65" /></a></div>
+    <div class="clear"></div>
+    </div>
+</div>
+<!--header end-->
+
+<!--nav start-->
+<div class="navbg">
+	<div class="nav_box">
+        <ul id="nav">
+        <%= GetNavHtml("PcMainNav")%>
+    
+            <div class="clear"></div>
+        </ul>
+
+       <uc1:UcPcProductTreeNav  ID="ucPcProductTreeNav1" runat="server"/>
+
+    </div>
+</div>
+<!--nav end-->
+
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+        
+        </asp:ContentPlaceHolder>
+
+    <!--底部开始-->
+    <div class="site-info-w">
+    <div class="site-info">
+    <%=GetNavHtml("FooterNav")%>
+   
+    
+    
+        <div class="site-info__item site-info__item--service">
+            <i class="hotline sp-ft"></i>
+            <p class="desc">退款、退换货、查看你和我</p>
+            <p><a gaevent="footer/selfservice" class="selfservice-link" href="/newdetails.aspx?id=249">参考教程，轻松搞定 »</a></p>
+            <div class="contact-info">
+                <p>客服电话：400-620-5235</p>
+                <p>服务时间：每天 9:00 - 22:00</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy;<span title="I:6; Q:14; S:12; C:9; F:0; T:358.83; H:com">2014</span><a href="#">你和我网</a> meituan.com <a target="_blank" href="#">京ICP证022291号</a> 京公网安备110121215545号<a target="_blank" href="#"> 电子公告服务规则</a></p>
+        </div>
+       </div>
+</div>
+    <!--//底部结束-->
+
+    <!--客服开始-->
+    <div class="kefu">
+        <div class="box">
+            <img src="/memberuser/images/kefu_icon.png" class="top" />
+     <%--         <p style=" font-size: 16px;font-weight: bold; text-align: center;
+}">我和你客服专线</p>
+              <p style=" font-weight:bold;"><img width="27" height="25" style=" margin-right:0px;" src="/memberuser/images/right_phone.png">400-886-9677</p>
+              <div class="fixborder"></div>--%>
+                <asp:Repeater ID="rpt_qqlist" runat="Server">
+                    <ItemTemplate>
+             <p><a href="http://wpa.qq.com/msgrd?v=3&amp;uin=<%#Eval("Name") %>&amp;site=qq&amp;menu=yes" target="_blank"><img src="/memberuser/images/QQ.png" width="27" height="25" /><%#Eval("Title") %></a></p>
+              </ItemTemplate>
+         </asp:Repeater>
+        <img style="padding: 4px; height: 137px;" src="/memberuser/images/code.jpg">
+        </div>
+    </div>
+    <!--客服结束-->
+
+    <!--s topheader-->
+    <div class="topheader" id="roll_top">
+        <a href="javascript:void(0);" class="tophead"><img src="/memberuser/images/topheader.png"></a>
+    </div>
+    <!--s topheader-->
+    <script type="text/javascript">
+        $(function () { 
+            /*返回顶部*/
+	        $('#roll_top').hide();
+	        $(window).scroll(function () {
+		        if ($(window).scrollTop() > 50) {
+			        $('#roll_top').fadeIn(400);//当滑动栏向下滑动时，按钮渐现的时间
+		        } else {
+			        $('#roll_top').fadeOut(0);//当页面回到顶部第一屏时，按钮渐隐的时间
+		        }
+	        });
+	        $('#roll_top').click(function () {
+		        $('html,body').animate({
+			        scrollTop : '0px'
+		        }, 300);//返回顶部所用的时间
+	        });
+})
+    </script>
+
+    <!--[if lte IE 6]> 
+<script type="text/javascript" src="js/png.js"></script>
+<script type="text/javascript"> 
+   DD_belatedPNG.fix('img,div,ul,li,a,png,em,i,*'); 
+</script> 
+<![endif]-->
+</body>
+</html>
