@@ -12,6 +12,9 @@ const {
     Statis_Visits,
     Statis_Api
 } = require('../../mongodb/Schema/statis'); //统计
+const {
+    Admin
+} = require('../../mongodb/Schema/admin');
 const request = require('request');
 
 
@@ -177,6 +180,26 @@ class Utils {
                     return myself.ErrMsg(res,{Code:2,msg:'用户不存在或已过期'});
                 }
                 return resolve(response);
+            })
+        })
+    }
+    permissionValidate(res,AdminToken,permissionList){ //后台用户权限验证
+        return new Promise((resolve,reject)=>{
+            Admin.findOne({
+                _id: AdminToken
+            },{password:0}).then(adminInfo => {
+                if (!adminInfo) return this.ErrMsg(res, {
+                    msg: '用户信息不存在'
+                });
+                if (permissionList.indexOf(adminInfo.roles)===-1) return this.ErrMsg(res, {
+                    msg: '用户权限不足'
+                });
+                return resolve(adminInfo)
+            },error=>{
+                this.ErrMsg(res, {
+                    msg: error.message
+                });
+                return reject();
             })
         })
     }

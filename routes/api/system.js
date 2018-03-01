@@ -72,25 +72,29 @@ router.post('/LoginUser', function (req, res) { //登陆管理员
 })
 
 router.post('/GetAdminList', function (req, res) { //获取管理员账户列表信息
-    Admin.find({}, {
-        __v: 0,
-        password: 0
-    }).then(response => {
-        return Utils.SuccessMsg(res, {
-            data: response
+    let params = req.body;
+    if (!params.AdminToken) return Utils.ErrMsg(res, {});
+    Utils.permissionValidate(res,params.AdminToken,['root']).then(success=>{
+        Admin.find({}, {
+            __v: 0,
+            password: 0
+        }).then(response => {
+            return Utils.SuccessMsg(res, {
+                data: response
+            });
+        }, err => {
+            return Utils.ErrMsg(res, {
+                msg: err.message
+            })
         });
-    }, err => {
-        return Utils.ErrMsg(res, {
-            msg: err.message
-        })
-    });
+    })
 })
 
 router.post('/GetAdminInfo', function (req, res) { //获取管理员账户信息
     let params = req.body;
-    if (!params.token) return Utils.ErrMsg(res, {});
+    if (!params.AdminToken) return Utils.ErrMsg(res, {});  
     Admin.findOne({
-        _id: params.token
+        _id: params.AdminToken
     }, {
         __v: 0,
         password: 0
@@ -110,7 +114,7 @@ router.post('/GetAdminInfo', function (req, res) { //获取管理员账户信息
 
 router.post('/EditAdminInfo', function (req, res) { //编辑管理员账户信息
     let params = req.body;
-    if (!params.token) return Utils.ErrMsg(res, {});
+    if (!params.TargetId || !params.AdminToken) return Utils.ErrMsg(res, {});
     let UpdatedData = {};
     if (params.roles) {
         UpdatedData.roles = params.roles
@@ -133,35 +137,32 @@ router.post('/EditAdminInfo', function (req, res) { //编辑管理员账户信�
     if (params.status) {
         UpdatedData.status = params.status
     };
-    Admin.updateOne({
-        _id: params.token
-    }, UpdatedData, {
-        upsert: false
-    }).then(response => {
-        if (!response) return Utils.ErrMsg(res, {
-            msg: '用户信息不存在'
+    Utils.permissionValidate(res,params.AdminToken,['root']).then(success=>{
+        Admin.updateOne({
+            _id: params.TargetId
+        }, UpdatedData, {
+            upsert: false
+        }).then(response => {
+            if (!response) return Utils.ErrMsg(res, {
+                msg: '用户信息不存在'
+            });
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            });
+        }, err => {
+            return Utils.ErrMsg(res, {
+                msg: err.message
+            })
         });
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
-        });
-    }, err => {
-        return Utils.ErrMsg(res, {
-            msg: err.message
-        })
-    });
+    })  
 })
 
 router.post('/DelectAdmin', function (req, res) { //删除管理员
     let params = req.body;
-    if (!params.token) return Utils.ErrMsg(res, {});
-    Admin.findOne({
-        _id: params.token
-    }).then(count => {
-        if (count.roles === 'root') return Utils.ErrMsg(res, {
-            msg: '用户权限不足'
-        });
+    if (!params.AdminToken) return Utils.ErrMsg(res, {});
+    Utils.permissionValidate(res,params.AdminToken,['root']).then(success=>{
         Admin.deleteOne({
-            _id: params.token
+            _id: params.AdminToken
         }).then(response => {
             return Utils.SuccessMsg(res, {
                 msg: 'ok'
@@ -174,16 +175,8 @@ router.post('/DelectAdmin', function (req, res) { //删除管理员
 
 router.post('/AuthorizedAdmin', function (req, res) { //审核认证管理员
     let params = req.body;
-    if (!params.rootId || !params.othersId || !params.status) return Utils.ErrMsg(res, {});
-    Admin.findOne({
-        _id: params.rootId
-    }).then(count => {
-        if (!count) return Utils.ErrMsg(res, {
-            msg: '用户信息不存在'
-        });
-        if (count.roles === 'test' || count.roles === 'admin') return Utils.ErrMsg(res, {
-            msg: '用户权限不足'
-        });
+    if (!params.rootId || !params.AdminToken || !params.status) return Utils.ErrMsg(res, {});
+    Utils.permissionValidate(res,params.AdminToken,['root']).then(success=>{
         Admin.updateOne({
             _id: params.othersId
         }, {
@@ -254,21 +247,23 @@ router.post('/GetGoodsList', function (req, res) { //获取商品列表
 
 router.post('/DeleteGoods', function (req, res) { //删除商品
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
-    Product.deleteOne({
-        _id: params.Id
-    }).then(response => {
-        return Utils.SuccessMsg(res, {})
-    }, err => {
-        return Utils.ErrMsg(res, {
-            msg: err.message
-        })
-    });
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Product.deleteOne({
+            _id: params.Id
+        }).then(response => {
+            return Utils.SuccessMsg(res, {})
+        }, err => {
+            return Utils.ErrMsg(res, {
+                msg: err.message
+            })
+        });
+    })
 });
 
 router.post('/EditGoods', function (req, res) { //编辑商品信息
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
     let UpdatedData = {};
     if (params.productName) {
         UpdatedData.productName = params.productName
@@ -297,22 +292,24 @@ router.post('/EditGoods', function (req, res) { //编辑商品信息
     if (params.status) {
         UpdatedData.status = params.status
     };
-    Product.updateOne({
-        productNo: params.Id
-    }, UpdatedData, {
-        upsert: false
-    }).then(response => {
-        if (!response) return Utils.ErrMsg(res, {
-            msg: '商品不存在'
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Product.updateOne({
+            productNo: params.Id
+        }, UpdatedData, {
+            upsert: false
+        }).then(response => {
+            if (!response) return Utils.ErrMsg(res, {
+                msg: '商品不存在'
+            });
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            });
+        }, err => {
+            return Utils.ErrMsg(res, {
+                msg: err.message
+            })
         });
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
-        });
-    }, err => {
-        return Utils.ErrMsg(res, {
-            msg: err.message
-        })
-    });
+    })    
 })
 
 router.post('/GetAllCategory', function (req, res) { //获取商品目录信息
@@ -436,23 +433,25 @@ router.post('/CreatedCategory', function (req, res) { //创建新的节点
 
 router.post('/DeleteCategory', function (req, res) { //删除一个节点
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
-    Category.deleteOne({
-        Id: params.Id
-    }).then(response => {
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Category.deleteOne({
+            Id: params.Id
+        }).then(response => {
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            });
+        }, err => {
+            return Utils.ErrMsg(res, {
+                msg: err.message
+            })
         });
-    }, err => {
-        return Utils.ErrMsg(res, {
-            msg: err.message
-        })
-    });
+    })    
 })
 
 router.post('/EditCategory', function (req, res) { //编辑节点
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
     let fromData = {};
     if (params.name) {
         fromData.name = params.name
@@ -466,22 +465,24 @@ router.post('/EditCategory', function (req, res) { //编辑节点
     if (params.desc) {
         fromData.desc = params.desc
     }
-    Category.updateOne({
-        Id: params.Id
-    }, fromData, {
-        upsert: false
-    }).then(response => {
-        if (!response) return Utils.ErrMsg(res, {
-            msg: '节点不存在'
-        });
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
-        });
-    }, err => {
-        return Utils.ErrMsg(res, {
-            msg: err.message
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Category.updateOne({
+            Id: params.Id
+        }, fromData, {
+            upsert: false
+        }).then(response => {
+            if (!response) return Utils.ErrMsg(res, {
+                msg: '节点不存在'
+            });
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            });
+        }, err => {
+            return Utils.ErrMsg(res, {
+                msg: err.message
+            })
         })
-    })
+    })    
 })
 
 //cms
@@ -532,23 +533,25 @@ router.post('/CreatedArticle', function (req, res) { // 新增文章
 
 router.post('/DeleteArticle', function (req, res) { // 删除文章信息
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
-    Article.deleteOne({
-        id: params.Id
-    }).then(response => {
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
-        });
-    }, error => {
-        return Utils.ErrMsg(res, {
-            msg: error.message
-        });
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Article.deleteOne({
+            id: params.Id
+        }).then(response => {
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            });
+        }, error => {
+            return Utils.ErrMsg(res, {
+                msg: error.message
+            });
+        })
     })
 })
 
 router.post('/EditArticle', function (req, res) { // 编辑文章信息
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
     let formData = {
         article_title: params.article_title || null,
         article_url: params.article_url || null,
@@ -561,19 +564,21 @@ router.post('/EditArticle', function (req, res) { // 编辑文章信息
         end_date: params.end_date || null,
         status: params.status || null
     };
-    Article.updateOne({
-        id: params.Id
-    }, formData, {
-        upsert: false
-    }).then(response => {
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
-        });
-    }, error => {
-        return Utils.ErrMsg(res, {
-            msg: error.message
-        });
-    })
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Article.updateOne({
+            id: params.Id
+        }, formData, {
+            upsert: false
+        }).then(response => {
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            });
+        }, error => {
+            return Utils.ErrMsg(res, {
+                msg: error.message
+            });
+        })
+    })    
 })
 
 router.post('/GetGoodsCategoryList', function (req, res) { //获取活动列表
@@ -646,7 +651,7 @@ router.post('/CreateGoodsCategory', function (req, res) { //创建活动
 
 router.post('/EditGoodsCategory', function (req, res) { //编辑活动
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
     let formData = {
         product_list: params.product_list || [],
         type: params.type || null,
@@ -657,35 +662,39 @@ router.post('/EditGoodsCategory', function (req, res) { //编辑活动
         end_date: params.end_date,
         status: params.status || 9
     };
-    GoodsCategory.updateOne({
-        id: params.Id
-    }, formData, {
-        upsert: false
-    }).then(response => {
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        GoodsCategory.updateOne({
+            id: params.Id
+        }, formData, {
+            upsert: false
+        }).then(response => {
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            })
+        }, error => {
+            return Utils.ErrMsg(res, {
+                msg: error.message
+            });
         })
-    }, error => {
-        return Utils.ErrMsg(res, {
-            msg: error.message
-        });
     })
 })
 
 router.post('/DeleteGoodsCategory', function (req, res) { //删除活动
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
-    GoodsCategory.deleteOne({
-        id: params.Id
-    }).then(response => {
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        GoodsCategory.deleteOne({
+            id: params.Id
+        }).then(response => {
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            });
+        }, err => {
+            return Utils.ErrMsg(res, {
+                msg: err.message
+            })
         });
-    }, err => {
-        return Utils.ErrMsg(res, {
-            msg: err.message
-        })
-    });
+    })
 })
 
 router.post('/GetProductList', function (req, res) { //获取商品列表
@@ -775,7 +784,16 @@ router.post('/CreatedShop',function(req,res){ //创建店铺
         shop_logo: params.shop_logo,
         cms_content: params.cms_content,
         shop_summary: params.shop_summary,
-        category_info: params.category_info || [],
+        category_info: [
+            {
+                Id: 1,
+                createTime: new Date(),
+                desc: '根目录',
+                image_url: [],
+                name: '根目录',
+                parentId: 0
+            }
+        ],
         cms_banner: params.cms_banner || [],
         goods_total_num: 0,
         like_count: 0,
@@ -790,7 +808,7 @@ router.post('/CreatedShop',function(req,res){ //创建店铺
 
 router.post('/EditShop', function (req, res) { //编辑店铺
     let params = req.body;
-    if (!params.Id) return Utils.ErrMsg(res, {});
+    if (!params.Id || !params.AdminToken) return Utils.ErrMsg(res, {});
     let formData = {
         shop_name: params.shop_name || '',
         shop_logo: params.shop_logo || [],
@@ -802,31 +820,35 @@ router.post('/EditShop', function (req, res) { //编辑店铺
         shop_summary: params.shop_summary || '',
     };
     if(formData.goods_list&&formData.goods_list.length>0){formData.goods_total_num = formData.goods_list.length}
-    Shop_info.updateOne({
-        id: params.Id
-    }, formData, {
-        upsert: false
-    }).then(response => {
-        return Utils.SuccessMsg(res, {
-            msg: 'ok'
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Shop_info.updateOne({
+            id: params.Id
+        }, formData, {
+            upsert: false
+        }).then(response => {
+            return Utils.SuccessMsg(res, {
+                msg: 'ok'
+            })
+        }, error => {
+            return Utils.ErrMsg(res, {
+                msg: error.message
+            });
         })
-    }, error => {
-        return Utils.ErrMsg(res, {
-            msg: error.message
-        });
-    })
+    })    
 })
 
 router.post('/EditShopCategory',function(req,res){ //编辑店铺的商品分类
     let params = req.body;
-    if(!params.Id || !params.categoryId || !params.category_info)return Utils.ErrMsg(res,{});
-    Shop_info.updateOne({id: params.Id,"category_info.Id":params.categoryId},{
-        $set:{
-            "category_info.$": params.category_info
-        }
-    },{upsert: false}).then(response=>{
-        return Utils.SuccessMsg(res,{msg: 'ok'})
-    },error=>{Utils.ErrMsg(res,{msg:error.message})})
+    if(!params.Id || !params.categoryId || !params.category_info || !params.AdminToken)return Utils.ErrMsg(res,{});
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Shop_info.updateOne({id: params.Id,"category_info.Id":params.categoryId},{
+            $set:{
+                "category_info.$": params.category_info
+            }
+        },{upsert: false}).then(response=>{
+            return Utils.SuccessMsg(res,{msg: 'ok'})
+        },error=>{Utils.ErrMsg(res,{msg:error.message})})
+    })    
 })
 router.post('/AddShopCategory',function(req,res){ //添加店铺的商品分类
     let params = req.body;
@@ -838,18 +860,22 @@ router.post('/AddShopCategory',function(req,res){ //添加店铺的商品分类
 })
 router.post('/DeleteShopCategory',function(req,res){ //删除店铺的商品分类
     let params = req.body;
-    if(!params.Id || !params.categoryId)return Utils.ErrMsg(res,{});
-    Shop_info.updateOne({id: params.Id},{$pull: {"category_info": {Id: params.categoryId}}},{upsert: false}).then(response=>{
-        return Utils.SuccessMsg(res,{msg: 'ok'})
-    },error=>{Utils.ErrMsg(res,{msg:error.message})})
+    if(!params.Id || !params.categoryId || !params.AdminToken)return Utils.ErrMsg(res,{});
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Shop_info.updateOne({id: params.Id},{$pull: {"category_info": {Id: params.categoryId}}},{upsert: false}).then(response=>{
+            return Utils.SuccessMsg(res,{msg: 'ok'})
+        },error=>{Utils.ErrMsg(res,{msg:error.message})})
+    })    
 })
 
 router.post('/DeleteShop',function(req,res){ //删除店铺
     let params = req.body;
-    if(!params.ShopId)return Utils.ErrMsg(res,{});
-    Shop_info.deleteOne({id: params.ShopId}).then(response=>{
-        return Utils.SuccessMsg(res,{msg:'ok'})
-    },error=>{return Utils.ErrMsg(res,{msg:error.message})})
+    if(!params.ShopId || !params.AdminToken)return Utils.ErrMsg(res,{});
+    Utils.permissionValidate(res,params.AdminToken,['root','admin']).then(success=>{
+        Shop_info.deleteOne({id: params.ShopId}).then(response=>{
+            return Utils.SuccessMsg(res,{msg:'ok'})
+        },error=>{return Utils.ErrMsg(res,{msg:error.message})})
+    })
 })
 
 module.exports = router;

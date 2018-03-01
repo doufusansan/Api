@@ -13,6 +13,7 @@ mongoose.connection.on('connected', function () {
     console.log('数据库连接成功: ');  
 });    
 
+
 /**
  * 连接异常
  */
