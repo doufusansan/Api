@@ -25,7 +25,7 @@ __另外即将发布从后台本地环境搭建到服务区部署的教程会放
 
 ## Api接口文档
 
-[Api接口文档](http://awei.fun/mobile)
+[Api接口文档](https://github.com/Caitingwei/node-api-jd/blob/master/API.md#1%E8%8E%B7%E5%8F%96%E6%96%87%E7%AB%A0%E5%88%97%E8%A1%A8)
 
 ## 安装
 ```
