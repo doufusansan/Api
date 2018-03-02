@@ -110,8 +110,8 @@ http://awei.fun:3333/api/cms/GetArticle
 #### 参数类型：
 
     |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+    |:-----|:-------:|:-----|:-----|
+    |Id      |Y       |Number |文章Id |
 
 ### 2、获取文章详情
 
@@ -123,34 +123,38 @@ http://awei.fun:3333/api/cms/GetArticleList
 #### 参数类型：
 
     |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+    |:-----|:-------:|:-----|:-----|
+    |pageIndex      |Y       |Number |页码 | 
+    |pageSize      |Y       |Number |页码大小 | 
+    |Type      |N       |String |资讯类型 | 
 
 ### 3、获取活动分类列表
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/cms/GetGoodsCategoryList
 ```
 
 #### 参数类型：
 
     |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+    |:-----|:-------:|:-----|:-----|
+    |pageIndex      |Y       |Number |页码 | 
+    |pageSize      |Y       |Number |页码大小 | 
+    |Type      |N       |String |资讯类型 |
 
 ### 4、获取活动详情
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/cms/GetGoodsCategory
 ```
 
 #### 参数类型：
 
     |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+    |:-----|:-------:|:-----|:-----|
+    |Type      |N       |String |资讯类型 | 
 
 ### 5、获取推荐商品列表
 
