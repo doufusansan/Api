@@ -127,7 +127,7 @@ http://awei.fun:3333/api/cms/GetArticleList
 | ------------- |:-------------:| -----:| -----:|
 | pageIndex | Y | Number |    页码|
 | pageSize | Y | Number |    页码大小|
-| Type | Y | String |    资讯类型|
+| Type | N | String |    资讯类型|
 
 ### 3、获取活动分类列表
 
@@ -142,7 +142,7 @@ http://awei.fun:3333/api/cms/GetGoodsCategoryList
 | ------------- |:-------------:| -----:| -----:|
 | pageIndex | Y | Number |    页码|
 | pageSize | Y | Number |    页码大小|
-| Type | Y | String |    资讯类型|
+| Type | N | String |    资讯类型|
 
 ### 4、获取活动详情
 
@@ -161,27 +161,30 @@ http://awei.fun:3333/api/cms/GetGoodsCategory
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/cms/GetRecommend
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| pageIndex | Y | Number |    页码|
+| pageSize | Y | Number |    页码大小|
+| Type | Y | String |    资讯类型|
 
 ### 6、获取首页全部数据
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/GetIndexCmsData
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| pageIndex | Y | Number |    页码|
+| pageSize | Y | Number |    页码大小|
 
 >>用户
 
@@ -189,183 +192,206 @@ http://awei.fun:3333/
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/GetUserInfo
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| MemberToken | Y | String |    用户标识或手机号码|
 
 ### 8、发送短信验证码
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/SendPhoneMessage
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| phone | Y | String |    手机号码|
 
 ### 9、注册账号
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/Registered
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| username | Y | String |    用户名|
+| password | Y | String |    密码|
+| phone | Y | String |    手机号码|
+| challengecode | Y | String |    验证码|
+| Sex | N | Number |    性别|
+
+
+
 
 ### 10、编辑用户信息
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/EditUserInfo
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| MemberToken | Y | String |    标识|
+| Sex | N | String |    性别|
+| photoUrl | N | String |    头像|
+| nickName | N | String |    昵称|
 
-### 11、设置
+### 11、设置/修改账户支付密码
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/SetPassword
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| phone | Y | String |    手机号码|
+| challengecode | Y | String |    验证码|
+| newpassword | Y | String |    新的密码|
 
 ### 12、登录
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/Login
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| username | Y | String |    用户名或手机号码|
+| password | Y | String |    密码|
 
-### 13、修改
+### 13、修改/新增地址
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/SaveAddress
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| Phone | N | String |    手机号码|
+| Province | N | String |    省|
+| City | N | String |    市|
+| Area | N | String |    区|
+| Address | N | String |    详细地址|
+| Selected | N | String |    选中|
+| Id | N | String |    要修改的地址Id|
 
 ### 14、获取地址详情
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/GetAddress
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| Id | Y | String |    地址Id|
 
 ### 15、获取地址列表
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/GetAddressList
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| pageSize | Y | Number |    分页|
+| pageIndex | Y | Number |    页码大小|
+
 
 ### 16、获取默认地址
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/GetDefaultAddress
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| - | - | - |    -|
 
 ### 17、删除地址
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/RemoveAddress
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| Id | Y | String |    地址Id|
 
 ### 18、余额支付
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/PayByWallet
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| PaymentNo | Y | String |    订单号|
+| PaymentPassword | Y | String |    支付密码|
 
 ### 18、收藏店铺
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/ShopFavorite
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| Id | Y | String |    店铺Id|
 
 ### 19、获取我收藏的店铺
 
 #### 请求URL:
 ```
-http://awei.fun:3333/
+http://awei.fun:3333/api/member/GetMyShopFavorite
 ```
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-----|:-----|:----|
-    |type  |XXX |String | test| 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| pageSize | Y | Number |    分页|
+| pageIndex | Y | Number |    页码大小|
 
 >>商城
 
