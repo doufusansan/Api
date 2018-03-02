@@ -109,11 +109,9 @@ http://awei.fun:3333/api/cms/GetArticle
 
 #### 参数类型：
 
-| Tables | Are | Cool |
-| ------------- |:-------------:| -----:|
-| col 3 is | right-aligned | $1600 |
-| col 2 is | centered | $12 |
-| zebra stripes | are neat | $1 |
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| Id | Y | Number |    文章Id|
 
 ### 2、获取文章详情
 
@@ -124,11 +122,12 @@ http://awei.fun:3333/api/cms/GetArticleList
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-------:|:-----|:-----|
-    |pageIndex      |Y       |Number |页码 | 
-    |pageSize      |Y       |Number |页码大小 | 
-    |Type      |N       |String |资讯类型 | 
+
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| pageIndex | Y | Number |    页码|
+| pageSize | Y | Number |    页码大小|
+| Type | Y | String |    资讯类型|
 
 ### 3、获取活动分类列表
 
@@ -139,11 +138,11 @@ http://awei.fun:3333/api/cms/GetGoodsCategoryList
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-------:|:-----|:-----|
-    |pageIndex      |Y       |Number |页码 | 
-    |pageSize      |Y       |Number |页码大小 | 
-    |Type      |N       |String |资讯类型 |
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| pageIndex | Y | Number |    页码|
+| pageSize | Y | Number |    页码大小|
+| Type | Y | String |    资讯类型|
 
 ### 4、获取活动详情
 
@@ -154,9 +153,9 @@ http://awei.fun:3333/api/cms/GetGoodsCategory
 
 #### 参数类型：
 
-    |参数|是否必选|类型|说明|
-    |:-----|:-------:|:-----|:-----|
-    |Type      |N       |String |资讯类型 | 
+| 参数 | 是否必填 | 类型 | 说明 |
+| ------------- |:-------------:| -----:| -----:|
+| Type | N | String |    资讯类型|
 
 ### 5、获取推荐商品列表
 
