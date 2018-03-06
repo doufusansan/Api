@@ -8,9 +8,9 @@ router.get('/', function (req, res, next) {
     title: 'awei.fun api'
   });
 });
-router.get('/socket', function (req, res, next) {
-  res.render('socket');
-});
+// router.get('/socket', function (req, res, next) {
+//   res.render('socket');
+// });
 
 
 
