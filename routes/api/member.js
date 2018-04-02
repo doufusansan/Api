@@ -56,6 +56,7 @@ router.post('/Registered', function(req,res) {  //注册账号
                 let newMemberInfo = new Member({
                     username: params.username,
                     password: md5(params.password),
+                    validWalletAmount: 200000,
                     Sex: params.Sex ?  params.Sex : null,
                     phone: params.phone,
                     nickName: 'jd_' + Utils.GenerateChallengecode(10)
