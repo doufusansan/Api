@@ -6,25 +6,28 @@
 
 var app = require('../app');
 var debug = require('debug')('meituan:server');
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var http = require('http');
+// var io = require('socket.io')(http);
+var https = require('https');
+var fs = require('fs');
+
 
 //socket.io
 
-io.on('connection', function(socket){
-  // socket.broadcast.emit('SendChat','asdsadsadasd');
-  socket.on('SendChat', function(msg,fn){
-    io.emit('SendChat', msg);
-    console.log("msg" + msg) 
-  });
-});
-var news = io.of('/news').on('connection', function (socket) {
-  socket.emit('item','hahahahahahahhah');
-  socket.join('room 237', () => { //将客户端添加到房间列表中，并可选择触发带err签名的回调（如果有的话）
-    let rooms = Object.keys(socket.rooms);
-    console.log(rooms); // [ <socket.id>, 'room 237' ]
-  });
-});
+// io.on('connection', function (socket) {
+//   // socket.broadcast.emit('SendChat','asdsadsadasd');
+//   socket.on('SendChat', function (msg, fn) {
+//     io.emit('SendChat', msg);
+//     console.log("msg" + msg)
+//   });
+// });
+// var news = io.of('/news').on('connection', function (socket) {
+//   socket.emit('item', 'hahahahahahahhah');
+//   socket.join('room 237', () => { //将客户端添加到房间列表中，并可选择触发带err签名的回调（如果有的话）
+//     let rooms = Object.keys(socket.rooms);
+//     console.log(rooms); // [ <socket.id>, 'room 237' ]
+//   });
+// });
 
 //socket.io
 
@@ -35,79 +38,23 @@ var news = io.of('/news').on('connection', function (socket) {
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3333');
-app.set('port', port);
+var httpPort = 3031;
+var httpsPort = 3032;
 
 /**
  * Create HTTP server.
  */
 
-// var server = http.createServer(app);
+var options = {
+  key: fs.readFileSync('/usr/local/nginx/conf/2_awei.fun.key'),
+  cert: fs.readFileSync('/usr/local/nginx/conf/1_awei.fun_bundle.crt')
+};
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+var httpsServer = https.createServer(options, app);
+var httpServer = http.createServer(app);
 
-http.listen(port);
-http.on('error', onError);
-http.on('listening', onListening);
+//https监听3000端口
+httpsServer.listen(httpsPort);
 
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = http.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+//http监听3001端口
+httpServer.listen(httpPort);
