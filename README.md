@@ -20,9 +20,9 @@ __另外后台本地环境和数据库的搭建的教程会放到我的个人博
 
 # 演示
 
-[查看demo请戳这里](http://awei.fun/mobile)（请用chrome手机模式预览）
+[查看demo请戳这里](https://awei.fun/shop/mobile)（请用chrome手机模式预览）
 
-[后台管理系统请戳这里](http://awei.fun/admin)（请用chrome手机模式预览）
+[后台管理系统请戳这里](https://awei.fun/shop/admin)（请用chrome手机模式预览）
 
 
 ## Api接口文档

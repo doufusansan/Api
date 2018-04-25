@@ -22,7 +22,7 @@ var upload = multer({
 router.post('/uploadfile', upload.any(), (req, res, next) => {
   if (req.files.length <= 0 || req.files == null) return Utils.ErrMsg(res, {});
   req.files.map((item,index)=>{
-    item.filename=  `http://awei.fun/api/resouces/${item.filename}`
+    item.filename=  `https://awei.fun/api/resouces/${item.filename}`
     if(req.files.length-1 === index)return Utils.SuccessMsg(res, {data: req.files});
   })
 });
